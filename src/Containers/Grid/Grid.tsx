@@ -1,6 +1,7 @@
 import React from "react";
 
 import GridItem from "../../Components/GridItem/GridItem";
+import { GRID_ITEM_STATUS } from "../../Constants/enums";
 
 import "./Grid.css";
 
@@ -42,6 +43,7 @@ class Grid extends React.Component<GridProps, GridState> {
       for (let x = 0; x < columns; x++) {
         gridItems.push(
           <GridItem
+            status={GRID_ITEM_STATUS.START}
             key={"gi_" + x + "_" + y}
             row={y}
             column={x}

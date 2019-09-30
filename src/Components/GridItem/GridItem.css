@@ -1,6 +1,39 @@
 .grid__item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   border: 1px solid black;
   position: relative;
+}
+
+.grid__item--start {
+  background-color: green;
+}
+
+.grid__item--end {
+  background-color: red;
+}
+
+.grid__item--explored {
+  background-color: lightblue;
+}
+
+.grid__item--exploring {
+  background-color: blue;
+}
+
+.grid__item--wall {
+  background-color: gray;
+}
+
+.item__data {
+  display: flex;
+}
+
+.item__input {
+  display: inline-block;
+  width: 50%;
 }
 
 .item__coords {
@@ -10,12 +43,9 @@
   margin: 0;
 }
 
-.item__weight {
+.item__index {
+  position: absolute;
+  top: 0;
+  left: 0;
   margin: 0;
-  padding: 1em;
-}
-
-.item__input {
-  display: inline-block;
-  width: 50%;
 }

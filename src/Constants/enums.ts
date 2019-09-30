@@ -1,0 +1,7 @@
+export enum GRID_ITEM_STATUS {
+  OPEN = 1,
+  START,
+  END,
+  EXPLORED,
+  EXPLORING
+}
