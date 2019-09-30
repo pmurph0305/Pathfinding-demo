@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 
 import Grid from "./Grid";
+import GridItem from "../../Components/GridItem/GridItem";
 
 it("renders without crashing", () => {
   const div = document.createElement("div");
@@ -11,11 +12,6 @@ it("renders without crashing", () => {
 });
 
 describe("Shallow testing", () => {
-  it("Renders the correct number of grid items", () => {
-    let wrapper = shallow<Grid>(<Grid rows={5} columns={5} />);
-    expect(wrapper.find(".grid__item").length).toEqual(25);
-  });
-
   it("Calculates grid-template-rows and grid-template-columns correctly", () => {
     let wrapper = shallow<Grid>(<Grid rows={4} columns={2} />);
     let template = wrapper.instance().getGridTemplate(4, 2);
@@ -43,5 +39,28 @@ describe("Shallow testing", () => {
       gridTemplateColumns: "50% 50% ",
       gridTemplateRows: "100% "
     });
+  });
+
+  it("Correctly generates default values for nodes", () => {
+    let wrapper = shallow<Grid>(<Grid rows={1} columns={2} />);
+    expect(wrapper.state().nodes.length).toEqual(2);
+  });
+
+  it("Generates the correct # of GridItems", () => {
+    let wrapper = shallow<Grid>(<Grid rows={3} columns={5} />);
+    let gridItems = wrapper.instance().generateGridItems(3, 5);
+    expect(gridItems.length).toEqual(15);
+  });
+});
+
+describe("Mounted tests", () => {
+  it("Correctly updates nodes state", () => {
+    let wrapper = mount<Grid>(<Grid rows={3} columns={5} />);
+    let gridItems = wrapper.find(GridItem);
+    expect(gridItems.length).toEqual(15);
+    let input = gridItems.first().find("input");
+    expect(input.length).toEqual(1);
+    input.simulate("change", { target: { value: 2 } });
+    expect(wrapper.state().nodes[0]).toEqual(2);
   });
 });

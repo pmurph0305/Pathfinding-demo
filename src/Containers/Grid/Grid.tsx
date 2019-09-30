@@ -1,5 +1,7 @@
 import React from "react";
 
+import GridItem from "../../Components/GridItem/GridItem";
+
 import "./Grid.css";
 
 type GridProps = {
@@ -20,7 +22,7 @@ class Grid extends React.Component<GridProps, GridState> {
 
     this.state = {
       /** Nodes of the grid, 0 is not-walkable (ie a wall), all other values are the weight of going to that node. */
-      nodes: new Array(props.rows * props.columns).fill(0)
+      nodes: new Array(props.rows * props.columns).fill(1)
     };
   }
 
@@ -30,14 +32,23 @@ class Grid extends React.Component<GridProps, GridState> {
    * @param columns Number of columns to create
    * @returns array of grid__item 's
    */
-  generateGridItems = (rows: number, columns: number) => {
+  generateGridItems = (
+    rows: number,
+    columns: number,
+    nodes = this.state.nodes
+  ) => {
     let gridItems = [];
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < columns; j++) {
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < columns; x++) {
         gridItems.push(
-          <div className="grid__item" key={"gi_" + i + "_" + j}>
-            {j + "," + (i - rows) * -1}
-          </div>
+          <GridItem
+            key={"gi_" + x + "_" + y}
+            row={y}
+            column={x}
+            weight={nodes[y * columns + x]}
+            index={y * columns + x}
+            onChange={this.onChangeNodeWeight}
+          />
         );
       }
     }
@@ -45,9 +56,22 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   /**
+   * Determines whether change node weight on
+   * @param index index of element in nodes array
+   */
+  onChangeNodeWeight = (row: number, column: number) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let { columns } = this.props;
+    let newNodes = [...this.state.nodes];
+    newNodes[row * columns + column] = parseInt(e.target.value);
+    this.setState({ nodes: newNodes });
+  };
+
+  /**
    * Gets grid styles
-   * @param rows # of rows
-   * @param columns # of columns
+   * @param rows number of rows
+   * @param columns number of columns
    * @returns  React.CSSProperties { width, height, gridTemplateColumns, gridTemplateRows }
    */
   getGridStyles = (rows: number, columns: number) => {
@@ -101,12 +125,13 @@ class Grid extends React.Component<GridProps, GridState> {
 
   render() {
     const { rows, columns } = this.props;
+    const { nodes } = this.state;
     return (
       <div
         className="grid__container"
         style={this.getGridStyles(rows, columns)}
       >
-        {this.generateGridItems(rows, columns)}
+        {this.generateGridItems(rows, columns, nodes)}
       </div>
     );
   }

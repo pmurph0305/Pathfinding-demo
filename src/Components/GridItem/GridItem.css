@@ -1,0 +1,21 @@
+.grid__item {
+  border: 1px solid black;
+  position: relative;
+}
+
+.item__coords {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+
+.item__weight {
+  margin: 0;
+  padding: 1em;
+}
+
+.item__input {
+  display: inline-block;
+  width: 50%;
+}
