@@ -4,6 +4,7 @@ import GridItem from "../../Components/GridItem/GridItem";
 import { GRID_ITEM_STATUS } from "../../Constants/enums";
 
 import "./Grid.css";
+import { Pathfinder } from "../../Classes/Pathfinder";
 
 type GridProps = {
   rows: number;
@@ -15,6 +16,7 @@ type GridProps = {
  */
 type GridState = {
   nodes: number[];
+  path: number[];
 };
 
 class Grid extends React.Component<GridProps, GridState> {
@@ -23,7 +25,8 @@ class Grid extends React.Component<GridProps, GridState> {
 
     this.state = {
       /** Nodes of the grid, 0 is not-walkable (ie a wall), all other values are the weight of going to that node. */
-      nodes: new Array(props.rows * props.columns).fill(1)
+      nodes: new Array(props.rows * props.columns).fill(1),
+      path: []
     };
   }
 
@@ -41,9 +44,22 @@ class Grid extends React.Component<GridProps, GridState> {
     let gridItems = [];
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < columns; x++) {
+        let status = GRID_ITEM_STATUS.OPEN;
+        if (this.state.path.includes(y * columns + x)) {
+          status = GRID_ITEM_STATUS.PATH;
+        }
+        if (x === 0 && y === 0) {
+          status = GRID_ITEM_STATUS.START;
+        }
+        if (x === columns - 1 && y === rows - 1) {
+          status = GRID_ITEM_STATUS.END;
+        }
+        if (nodes[y * columns + x] === 0) {
+          status = GRID_ITEM_STATUS.WALL;
+        }
         gridItems.push(
           <GridItem
-            status={GRID_ITEM_STATUS.START}
+            status={status}
             key={"gi_" + x + "_" + y}
             row={y}
             column={x}
@@ -125,16 +141,31 @@ class Grid extends React.Component<GridProps, GridState> {
     return gridTemplate;
   };
 
+  onCalculatePath = () => {
+    let pathfinder = new Pathfinder(
+      this.state.nodes,
+      this.props.rows,
+      this.props.columns,
+      0,
+      this.state.nodes.length - 1
+    );
+    let path = pathfinder.calcPath();
+    this.setState({ path: path });
+  };
+
   render() {
     const { rows, columns } = this.props;
     const { nodes } = this.state;
     return (
-      <div
-        className="grid__container"
-        style={this.getGridStyles(rows, columns)}
-      >
-        {this.generateGridItems(rows, columns, nodes)}
-      </div>
+      <>
+        <div
+          className="grid__container"
+          style={this.getGridStyles(rows, columns)}
+        >
+          {this.generateGridItems(rows, columns, nodes)}
+        </div>
+        <button onClick={this.onCalculatePath}>Calculate Path</button>
+      </>
     );
   }
 }
