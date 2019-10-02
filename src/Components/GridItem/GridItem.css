@@ -27,6 +27,10 @@
   background-color: gray;
 }
 
+.grid__item--path {
+  background-color: pink;
+}
+
 .item__data {
   display: flex;
 }

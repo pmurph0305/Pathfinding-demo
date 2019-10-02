@@ -25,9 +25,6 @@ const GridItem = ({
 }: GridItemProps) => {
   const getClassNameFromStatus = (status: GRID_ITEM_STATUS, weight: number) => {
     let className = "grid__item";
-    if (weight === 0) {
-      className += " grid__item--wall";
-    }
     switch (status) {
       case GRID_ITEM_STATUS.START:
         return (className += " grid__item--start");
@@ -37,6 +34,10 @@ const GridItem = ({
         return (className += " grid__item--explored");
       case GRID_ITEM_STATUS.EXPLORING:
         return (className += " grid__item--exploring");
+      case GRID_ITEM_STATUS.PATH:
+        return (className += " grid__item--path");
+      case GRID_ITEM_STATUS.WALL:
+        return (className += " grid__item--wall");
       default:
         return className;
     }
