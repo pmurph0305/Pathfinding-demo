@@ -156,7 +156,7 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   onChangeAlgorithm = (e: ChangeEvent<HTMLSelectElement>) => {
-    console.log("Change", e.target.value);
+    this.setState({ algorithm: parseInt(e.target.value) });
   };
 
   render() {

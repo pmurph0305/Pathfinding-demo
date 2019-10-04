@@ -1,5 +1,6 @@
 import { PATH_ALGORITHM } from "../Constants/enums";
 import { DijkstraAlgorithm } from "./DijkstraAlgorithm";
+import { AStarAlgorithm } from "./AStarAlgorithm";
 
 type pathNode = {
   i: number;
@@ -51,9 +52,13 @@ export class Pathfinder {
       end: this.end,
       path: []
     };
+    let alg;
     switch (algorithm) {
+      case PATH_ALGORITHM.ASTAR:
+        alg = new AStarAlgorithm(data);
+        return alg.calcPath();
       default:
-        let alg = new DijkstraAlgorithm(data);
+        alg = new DijkstraAlgorithm(data);
         return alg.calcPath();
     }
   }
