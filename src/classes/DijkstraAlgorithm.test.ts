@@ -37,7 +37,6 @@ it("calculates the path correctly with dijkstra", () => {
     end: 5,
     path: []
   };
-  let testNodes3 = [1, 1, 0, 1, 1, 1];
   let djikstra3 = new DijkstraAlgorithm(testData3);
   let path3 = djikstra3.calcPath();
   expect(path3).toEqual([]);

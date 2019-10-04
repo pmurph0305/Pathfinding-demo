@@ -5,7 +5,7 @@ export type pathNode = {
   prevNode?: number;
 };
 
-type pathData = {
+export type pathData = {
   nodes: number[];
   start: number;
   end: number;
@@ -49,7 +49,8 @@ export class PathAlgorithm {
    * @param columns number of columns in grid
    * @returns array of neighbours by index
    */
-  getNodeNeighbours(index: number, rows: number, columns: number) {
+  getNodeNeighbours(index: number) {
+    let { rows, columns } = this;
     let neighbours = [];
     // x & y values:
     let y = Math.floor(index / columns);

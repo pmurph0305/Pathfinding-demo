@@ -11,25 +11,30 @@ it("Gets neighbors correctly", () => {
   };
   let pathAlgorithm = new PathAlgorithm(testData);
 
-  let neighbours = pathAlgorithm.getNodeNeighbours(4, 3, 3);
+  let neighbours = pathAlgorithm.getNodeNeighbours(4);
   expect(neighbours).toEqual(expect.arrayContaining([1, 3, 5, 7]));
   expect(neighbours.length).toEqual(4);
 
-  let neighbours2 = pathAlgorithm.getNodeNeighbours(8, 3, 3);
-  expect(neighbours2).toEqual(expect.arrayContaining([7, 5]));
+  let neighbours2 = pathAlgorithm.getNodeNeighbours(0);
+  expect(neighbours2).toEqual(expect.arrayContaining([1, 3]));
   expect(neighbours2.length).toEqual(2);
 
-  let neighbours3 = pathAlgorithm.getNodeNeighbours(5, 4, 2);
+  let testData2 = {
+    nodes: [1, 1, 1, 1, 1, 1, 1, 1],
+    start: 0,
+    end: 8,
+    rows: 4,
+    columns: 2,
+    path: []
+  };
+  let pathAlgorithm2 = new PathAlgorithm(testData2);
+  let neighbours3 = pathAlgorithm2.getNodeNeighbours(5);
   expect(neighbours3).toEqual(expect.arrayContaining([3, 4, 7]));
   expect(neighbours3.length).toEqual(3);
 
-  let neighbours4 = pathAlgorithm.getNodeNeighbours(0, 2, 4);
-  expect(neighbours4).toEqual(expect.arrayContaining([1, 4]));
+  let neighbours4 = pathAlgorithm2.getNodeNeighbours(7);
+  expect(neighbours4).toEqual(expect.arrayContaining([5, 6]));
   expect(neighbours4.length).toEqual(2);
-
-  let neighbours5 = pathAlgorithm.getNodeNeighbours(0, 1, 9);
-  expect(neighbours5).toEqual([1]);
-  expect(neighbours5.length).toEqual(1);
 });
 
 it("creates the node array correctly", () => {
