@@ -151,7 +151,7 @@ class Grid extends React.Component<GridProps, GridState> {
       0,
       this.state.nodes.length - 1
     );
-    let path = pathfinder.calcPath();
+    let path = pathfinder.calcPath(this.state.algorithm);
     this.setState({ path: path });
   };
 
