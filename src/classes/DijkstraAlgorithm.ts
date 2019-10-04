@@ -43,16 +43,7 @@ export class DijkstraAlgorithm extends PathAlgorithm {
       unvisited.delete(cNode.i);
       // If destination node has been visited, then stop.
       if (!unvisited.has(end)) {
-        let path = [];
-        let pathNode = pathNodes[end];
-        while (pathNode.prevNode !== undefined) {
-          path.push(pathNode.i);
-          pathNode = pathNodes[pathNode.prevNode];
-        }
-        path.push(pathNode.i);
-        path.reverse();
-        this.path = path;
-        return path;
+        return this.buildPathArray(pathNodes);
       }
       // end will be infinity if it hasn't been found yet,
       // so we can use it to find the next lowest distance node.

@@ -36,8 +36,8 @@ export class PathAlgorithm {
    * @returns array of pathNode's
    */
   createNodeArray(nodes: number[]) {
-    let nodeArray = nodes.map((value, i) => {
-      return { i, distance: 0, weight: value };
+    let nodeArray: pathNode[] = nodes.map((value, i) => {
+      return { i, distance: 0, weight: value, prevNode: undefined };
     });
     return nodeArray;
   }
@@ -69,5 +69,18 @@ export class PathAlgorithm {
       neighbours.push(index + columns);
     }
     return neighbours;
+  }
+
+  buildPathArray(pathNodes: pathNode[]) {
+    let path = [];
+    let pathNode = pathNodes[this.end];
+    while (pathNode.prevNode !== undefined) {
+      path.push(pathNode.i);
+      pathNode = pathNodes[pathNode.prevNode];
+    }
+    path.push(pathNode.i);
+    path.reverse();
+    this.path = path;
+    return path;
   }
 }
