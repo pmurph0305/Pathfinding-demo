@@ -18,6 +18,15 @@ const testData2 = {
   path: []
 };
 
+const testData3 = {
+  nodes: [1, 0, 1],
+  rows: 3,
+  columns: 1,
+  start: 0,
+  end: 2,
+  path: []
+};
+
 it("Calculates heuristic properly", () => {
   let astar = new AStarAlgorithm(testData);
   let h1 = astar.getHeuristic(0);
@@ -48,4 +57,8 @@ it("Calculates a path properly", () => {
   let astar2 = new AStarAlgorithm(testData2);
   let path2 = astar2.calcPath();
   expect([5, 4, 3, 0]).toEqual(expect.arrayContaining(path2));
+
+  let astar3 = new AStarAlgorithm(testData3);
+  let path3 = astar3.calcPath();
+  expect([]).toEqual(expect.arrayContaining(path3));
 });

@@ -67,5 +67,5 @@ it("builds path array correctly", () => {
   let nodeArray = pathAlgorithm.createNodeArray(testData.nodes);
   nodeArray[1].prevNode = 0;
   let path = pathAlgorithm.buildPathArray(nodeArray);
-  expect([0, 1]).toEqual(expect.arrayContaining([0, 1]));
+  expect([0, 1]).toEqual(expect.arrayContaining(path));
 });

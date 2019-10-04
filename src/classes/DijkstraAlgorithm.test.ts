@@ -11,7 +11,7 @@ it("calculates the path correctly with dijkstra", () => {
   };
   let djikstra = new DijkstraAlgorithm(testData);
   let path = djikstra.calcPath();
-  expect(path).toEqual(expect.arrayContaining([0, 1, 2, 3, 4, 5]));
+  expect([0, 1, 2, 3, 4, 5]).toEqual(expect.arrayContaining(path));
   expect(path.length).toEqual(6);
   expect(djikstra.nodes).toEqual(testData.nodes);
 
@@ -26,8 +26,8 @@ it("calculates the path correctly with dijkstra", () => {
   let djikstra2 = new DijkstraAlgorithm(testData2);
   let path2 = djikstra2.calcPath();
   expect(path2.length).toEqual(4);
-  expect(path2).toEqual(expect.arrayContaining([0, 1, 2, 5]));
-  expect(djikstra2.path).toEqual(expect.arrayContaining([0, 1, 2, 5]));
+  expect([0, 1, 2, 5]).toEqual(expect.arrayContaining(path2));
+  expect([0, 1, 2, 5]).toEqual(expect.arrayContaining(djikstra2.path));
 
   let testData3 = {
     nodes: [1, 1, 0, 1, 1, 1],
