@@ -7,3 +7,8 @@ export enum GRID_ITEM_STATUS {
   EXPLORED,
   EXPLORING
 }
+
+export enum PATH_ALGORITHM {
+  DIJKSTRA = 1,
+  ASTAR
+}

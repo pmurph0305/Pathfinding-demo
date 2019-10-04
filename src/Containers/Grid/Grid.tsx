@@ -1,7 +1,7 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 
 import GridItem from "../../Components/GridItem/GridItem";
-import { GRID_ITEM_STATUS } from "../../Constants/enums";
+import { GRID_ITEM_STATUS, PATH_ALGORITHM } from "../../Constants/enums";
 
 import "./Grid.css";
 import { Pathfinder } from "../../Classes/Pathfinder";
@@ -17,6 +17,7 @@ type GridProps = {
 type GridState = {
   nodes: number[];
   path: number[];
+  algorithm: PATH_ALGORITHM;
 };
 
 class Grid extends React.Component<GridProps, GridState> {
@@ -26,7 +27,8 @@ class Grid extends React.Component<GridProps, GridState> {
     this.state = {
       /** Nodes of the grid, 0 is not-walkable (ie a wall), all other values are the weight of going to that node. */
       nodes: new Array(props.rows * props.columns).fill(1),
-      path: []
+      path: [],
+      algorithm: PATH_ALGORITHM.DIJKSTRA
     };
   }
 
@@ -153,6 +155,10 @@ class Grid extends React.Component<GridProps, GridState> {
     this.setState({ path: path });
   };
 
+  onChangeAlgorithm = (e: ChangeEvent<HTMLSelectElement>) => {
+    console.log("Change", e.target.value);
+  };
+
   render() {
     const { rows, columns } = this.props;
     const { nodes } = this.state;
@@ -165,6 +171,10 @@ class Grid extends React.Component<GridProps, GridState> {
           {this.generateGridItems(rows, columns, nodes)}
         </div>
         <button onClick={this.onCalculatePath}>Calculate Path</button>
+        <select onChange={this.onChangeAlgorithm}>
+          <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>
+          <option value={PATH_ALGORITHM.ASTAR}>A*</option>
+        </select>
       </>
     );
   }
