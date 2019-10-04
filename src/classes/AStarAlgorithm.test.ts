@@ -27,6 +27,15 @@ const testData3 = {
   path: []
 };
 
+const testDataGreedy = {
+  nodes: [1, 1, 1, 1, 0, 2, 1, 1, 1],
+  rows: 3,
+  columns: 3,
+  start: 0,
+  end: 8,
+  path: []
+};
+
 it("Calculates heuristic properly", () => {
   let astar = new AStarAlgorithm(testData);
   let h1 = astar.getHeuristic(0);
@@ -49,7 +58,7 @@ it("Calculates end XY properly", () => {
   expect(endY).toEqual(0);
 });
 
-it("Calculates a path properly", () => {
+it("Calculates a non-greedy path properly", () => {
   let astar = new AStarAlgorithm(testData);
   let path = astar.calcPath();
   expect([0, 1, 2, 3, 4, 5]).toEqual(expect.arrayContaining(path));
@@ -61,4 +70,18 @@ it("Calculates a path properly", () => {
   let astar3 = new AStarAlgorithm(testData3);
   let path3 = astar3.calcPath();
   expect([]).toEqual(expect.arrayContaining(path3));
+
+  let astarG = new AStarAlgorithm(testDataGreedy);
+  let pathG = astarG.calcPath();
+  expect([0, 3, 6, 7, 8]).toEqual(expect.arrayContaining(pathG));
+});
+
+it("Calculates a greedy path properly", () => {
+  let astar = new AStarAlgorithm(testData);
+  let path = astar.calcPath(true);
+  expect([0, 1, 2, 3, 4, 5]).toEqual(expect.arrayContaining(path));
+
+  let astarG = new AStarAlgorithm(testDataGreedy);
+  let pathG = astarG.calcPath(true);
+  expect([0, 1, 2, 5, 8]).toEqual(expect.arrayContaining(pathG));
 });

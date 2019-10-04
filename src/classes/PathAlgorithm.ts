@@ -45,8 +45,6 @@ export class PathAlgorithm {
   /**
    * Gets the indexes of the nodes neighbours.
    * @param index index of node to get neighbours for.
-   * @param rows numbers of rows in grid
-   * @param columns number of columns in grid
    * @returns array of neighbours by index
    */
   getNodeNeighbours(index: number) {
@@ -72,6 +70,11 @@ export class PathAlgorithm {
     return neighbours;
   }
 
+  /**
+   * Builds the array of the path taken to reach the end node.
+   * @param pathNodes array containing the calculated path data
+   * @returns Array of numbers representing index's of path in order.
+   */
   buildPathArray(pathNodes: pathNode[]) {
     let path = [];
     let pathNode = pathNodes[this.end];

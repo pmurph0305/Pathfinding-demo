@@ -3,7 +3,7 @@ import { PathAlgorithm, pathNode } from "./PathAlgorithm";
 export class DijkstraAlgorithm extends PathAlgorithm {
   /**
    * Calculates path using Dijkstra's Algorithm
-   * @returns path from start to end in an array.
+   * @returns Array of numbers representing index's of path in order.
    */
   calcPath() {
     let { start, end, nodes } = this;

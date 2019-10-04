@@ -170,10 +170,13 @@ class Grid extends React.Component<GridProps, GridState> {
         >
           {this.generateGridItems(rows, columns, nodes)}
         </div>
-        <button onClick={this.onCalculatePath}>Calculate Path</button>
-        <select onChange={this.onChangeAlgorithm}>
+        <button id="calc_path" onClick={this.onCalculatePath}>
+          Calculate Path
+        </button>
+        <select id="select_algorithm" onChange={this.onChangeAlgorithm}>
           <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>
           <option value={PATH_ALGORITHM.ASTAR}>A*</option>
+          <option value={PATH_ALGORITHM.ASTAR_GREEDY}>A* Greedy</option>
         </select>
       </>
     );

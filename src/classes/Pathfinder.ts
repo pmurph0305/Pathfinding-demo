@@ -2,13 +2,6 @@ import { PATH_ALGORITHM } from "../Constants/enums";
 import { DijkstraAlgorithm } from "./DijkstraAlgorithm";
 import { AStarAlgorithm } from "./AStarAlgorithm";
 
-type pathNode = {
-  i: number;
-  distance: number;
-  weight: number;
-  prevNode?: number;
-};
-
 export class Pathfinder {
   nodes: number[];
   start: number;
@@ -32,17 +25,10 @@ export class Pathfinder {
   }
 
   /**
-   * Creates the array of pathNode's
-   * @param nodes array of nodes with weights
-   * @returns array of pathNode's
+   * Calculates and returns the path for the specified algorithm
+   * @param [algorithm] Type of algorithm to use
+   * @returns Array of numbers representing index's of path in order.
    */
-  private createNodeArray(nodes: number[]) {
-    let nodeArray = nodes.map((value, i) => {
-      return { i, distance: 0, weight: value };
-    });
-    return nodeArray;
-  }
-
   calcPath(algorithm?: PATH_ALGORITHM) {
     let data = {
       nodes: this.nodes,
@@ -54,6 +40,9 @@ export class Pathfinder {
     };
     let alg;
     switch (algorithm) {
+      case PATH_ALGORITHM.ASTAR_GREEDY:
+        alg = new AStarAlgorithm(data);
+        return alg.calcPath(true);
       case PATH_ALGORITHM.ASTAR:
         alg = new AStarAlgorithm(data);
         return alg.calcPath();

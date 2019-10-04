@@ -4,6 +4,7 @@ import { shallow, mount } from "enzyme";
 
 import Grid from "./Grid";
 import GridItem from "../../Components/GridItem/GridItem";
+import { PATH_ALGORITHM } from "../../Constants/enums";
 
 it("renders without crashing", () => {
   const div = document.createElement("div");
@@ -51,6 +52,16 @@ describe("Shallow testing", () => {
     let gridItems = wrapper.instance().generateGridItems(3, 5);
     expect(gridItems.length).toEqual(15);
   });
+
+  it("Changes the algorithm state correctly", () => {
+    let wrapper = shallow<Grid>(<Grid rows={3} columns={5} />);
+    let select = wrapper.find("#select_algorithm");
+    expect(select.length).toEqual(1);
+    select.simulate("change", {
+      target: { value: PATH_ALGORITHM.ASTAR_GREEDY }
+    });
+    expect(wrapper.state().algorithm).toEqual(PATH_ALGORITHM.ASTAR_GREEDY);
+  });
 });
 
 describe("Mounted tests", () => {
@@ -62,5 +73,20 @@ describe("Mounted tests", () => {
     expect(input.length).toEqual(1);
     input.simulate("change", { target: { value: 2 } });
     expect(wrapper.state().nodes[0]).toEqual(2);
+    expect(wrapper.find(".grid__item--wall").length).toEqual(0);
+    input.simulate("change", { target: { value: 0 } });
+    expect(wrapper.state().nodes[0]).toEqual(0);
+    expect(wrapper.find(".grid__item--wall").length).toEqual(1);
+  });
+
+  it("Calculates the path", () => {
+    let wrapper = mount<Grid>(<Grid rows={3} columns={3} />);
+    let btn = wrapper.find("#calc_path");
+    expect(btn.length).toEqual(1);
+    btn.simulate("click");
+    expect(wrapper.state().path.length).toEqual(5);
+    expect([0, 1, 2, 5, 8]).toEqual(
+      expect.arrayContaining(wrapper.state().path)
+    );
   });
 });

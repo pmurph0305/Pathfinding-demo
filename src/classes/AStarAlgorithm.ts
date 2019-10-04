@@ -12,7 +12,12 @@ export class AStarAlgorithm extends PathAlgorithm {
     this.endY = endY;
   }
 
-  calcPath() {
+  /**
+   * Calculates path using the A* algorithm.
+   * @param [greedy] Should path calculation use the greedy algorithm
+   * @returns Array of numbers representing index's of path in order.
+   */
+  calcPath(greedy: boolean = false) {
     let { start, end, nodes } = this;
     let pathNodes: pathNode[] = this.createNodeArray(nodes);
 
@@ -55,8 +60,18 @@ export class AStarAlgorithm extends PathAlgorithm {
             // Update gscore, fScore, prevNode, and add to the openNodes array.
             pathNodes[neighbourIndex].prevNode = currentNodeIndex;
             gScore[neighbourIndex] = newGScore;
-            fScore[neighbourIndex] =
-              newGScore + this.getHeuristic(neighbourIndex);
+
+            if (!greedy) {
+              // non-greedy cares about the weight to the node as well.
+              fScore[neighbourIndex] =
+                newGScore + this.getHeuristic(neighbourIndex);
+            } else {
+              // greedy only cares about the heuristic, and its weight
+              fScore[neighbourIndex] =
+                pathNodes[neighbourIndex].weight +
+                this.getHeuristic(neighbourIndex);
+            }
+
             if (!openNodes.includes(neighbourIndex)) {
               openNodes.push(neighbourIndex);
             }
@@ -67,12 +82,20 @@ export class AStarAlgorithm extends PathAlgorithm {
     return [];
   }
 
+  /**
+   * Get end's x,y position for use in algorithm.
+   * @returns object with endX and endY properties
+   */
   getEndXY = () => {
     let endY = Math.floor(this.end / this.columns);
     let endX = this.end - endY * this.columns;
     return { endX, endY };
   };
 
+  /**
+   * Calculates the heuristic for the current index in a* algorithm by manhattan distance
+   * @returns Manhattan distance from index to end position.
+   */
   getHeuristic = (index: number) => {
     let y = Math.floor(index / this.columns);
     let x = index - y * this.columns;
