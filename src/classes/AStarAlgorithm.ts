@@ -1,4 +1,5 @@
 import { PathAlgorithm, pathNode, pathData } from "./PathAlgorithm";
+import { BinaryMinHeapKV } from "./BinaryMinHeapKV";
 
 export class AStarAlgorithm extends PathAlgorithm {
   endX: number;
@@ -14,15 +15,13 @@ export class AStarAlgorithm extends PathAlgorithm {
 
   /**
    * Calculates path using the A* algorithm.
-   * @param [greedy] Should path calculation use the greedy algorithm
+   * @param greedy Should path calculation use the greedy algorithm
    * @returns Array of numbers representing index's of path in order.
    */
   calcPath(greedy: boolean = false) {
     let { start, end, nodes } = this;
     let pathNodes: pathNode[] = this.createNodeArray(nodes);
 
-    // array of nodes that can still be explored
-    let openNodes = [start];
     // nodes that have been explored
     let closedNodes = new Set<number>();
 
@@ -34,17 +33,18 @@ export class AStarAlgorithm extends PathAlgorithm {
     let fScore = [...gScore];
     fScore[start] = this.getHeuristic(start);
 
-    while (openNodes.length > 0) {
-      // get lowest fscore node in currently open nodes.
-      let currentNodeIndex = openNodes.reduce((acc, cur) => {
-        return fScore[cur] < fScore[acc] ? cur : acc;
-      });
+    // min heap of nodes that can still be explored
+    let minHeap = new BinaryMinHeapKV();
+    minHeap.insert(this.getHeuristic(start), start);
+
+    while (!minHeap.isEmpty()) {
+      // get lowest fscore node in minheap.
+      let currentNodeIndex = minHeap.extractMin().value;
       let currentNode = pathNodes[currentNodeIndex];
       if (currentNode.i === end) {
         return this.buildPathArray(pathNodes);
       }
-      // remove current node from open nodes
-      openNodes.splice(openNodes.indexOf(currentNodeIndex), 1);
+
       closedNodes.add(currentNodeIndex);
       let neighbours = this.getNodeNeighbours(currentNode.i);
       neighbours.forEach(neighbourIndex => {
@@ -72,8 +72,8 @@ export class AStarAlgorithm extends PathAlgorithm {
                 this.getHeuristic(neighbourIndex);
             }
 
-            if (!openNodes.includes(neighbourIndex)) {
-              openNodes.push(neighbourIndex);
+            if (!minHeap.containsValue(neighbourIndex)) {
+              minHeap.insert(fScore[neighbourIndex], neighbourIndex);
             }
           }
         }
