@@ -18,6 +18,11 @@ type GridState = {
   nodes: number[];
   path: number[];
   algorithm: PATH_ALGORITHM;
+  isDragging: boolean;
+  isCreatingWalls: boolean;
+  dragStartIndex: number;
+  dragStartInitialWeight: number;
+  dragEndIndex: number;
 };
 
 class Grid extends React.Component<GridProps, GridState> {
@@ -28,9 +33,18 @@ class Grid extends React.Component<GridProps, GridState> {
       /** Nodes of the grid, 0 is not-walkable (ie a wall), all other values are the weight of going to that node. */
       nodes: new Array(props.rows * props.columns).fill(1),
       path: [],
-      algorithm: PATH_ALGORITHM.DIJKSTRA
+      algorithm: PATH_ALGORITHM.DIJKSTRA,
+      isDragging: false,
+      isCreatingWalls: false,
+      dragStartInitialWeight: 0,
+      dragStartIndex: 0,
+      dragEndIndex: 0
     };
   }
+
+  componentDidMount() {}
+
+  componentWillUnmount() {}
 
   /**
    * Generates grid items
@@ -68,6 +82,9 @@ class Grid extends React.Component<GridProps, GridState> {
             weight={nodes[y * columns + x]}
             index={y * columns + x}
             onChange={this.onChangeNodeWeight}
+            onMouseEnterGridItem={this.onMouseEnterGridItem}
+            onMouseDownGridItem={this.onMouseDownGridItem}
+            onMouseUpGridItem={this.onMouseUpGridItem}
           />
         );
       }
@@ -143,6 +160,10 @@ class Grid extends React.Component<GridProps, GridState> {
     return gridTemplate;
   };
 
+  /**
+   * Uses pathfinder.js and the state of the grid to
+   * calculate a path and display it.
+   */
   onCalculatePath = () => {
     let pathfinder = new Pathfinder(
       this.state.nodes,
@@ -155,8 +176,84 @@ class Grid extends React.Component<GridProps, GridState> {
     this.setState({ path: path });
   };
 
+  /**
+   * Changes the algorithm state based on select elements value.
+   */
   onChangeAlgorithm = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({ algorithm: parseInt(e.target.value) });
+  };
+
+  /**
+   * Updates state of isDragging to true, dragStartIndex to index,
+   * dragStartInitialWeight to node at index's weight,
+   * sets isCreatingWalls state based on node at index's weight
+   * @param index index in node array that mousedown was called on.
+   */
+  onMouseDownGridItem = (index: number) => (e: React.MouseEvent) => {
+    this.setState(state => {
+      return {
+        isDragging: true,
+        dragStartIndex: index,
+        dragStartInitialWeight: this.state.nodes[index],
+        isCreatingWalls: this.state.nodes[index] === 0 ? false : true
+      };
+    });
+  };
+
+  /**
+   * Sets is dragging to false, and the dragEndIndex to index.
+   * Changes the node at index to a wall or open if that nodes weight wasn't
+   * changed between MouseDown & MouseUp.
+   * @param index index of node array that mouseup event was called on.
+   */
+  onMouseUpGridItem = (index: number) => (e: React.MouseEvent) => {
+    if (
+      this.state.dragStartIndex === index &&
+      this.state.dragStartInitialWeight === this.state.nodes[index]
+    ) {
+      let nodes = [...this.state.nodes];
+      nodes[index] = this.state.isCreatingWalls ? 0 : 1;
+      this.setState(state => {
+        return {
+          isDragging: false,
+          dragEndIndex: index,
+          nodes: nodes
+        };
+      });
+    } else {
+      this.setState(state => {
+        return { isDragging: false, dragEndIndex: index };
+      });
+    }
+  };
+
+  /**
+   * If user is dragging, changes node weight to 0 or 1
+   * depending on if they started dragging on a wall or open node,
+   * and updates the node state.
+   * @param index index in node array that mouse entered
+   */
+  onMouseEnterGridItem = (index: number) => (e: React.MouseEvent) => {
+    if (this.state.isDragging) {
+      if (index !== this.state.dragStartIndex) {
+        // User is dragging, so switch between walls & open tiles.
+        let nodes = [...this.state.nodes];
+        nodes[index] = this.state.isCreatingWalls ? 0 : 1;
+        nodes[this.state.dragStartIndex] = nodes[index];
+        this.setState(state => {
+          return { nodes: nodes };
+        });
+      }
+    }
+  };
+
+  /**
+   * Sets state of dragging to false
+   */
+  onMouseExitGrid = (e: React.MouseEvent) => {
+    this.setState(state => {
+      return { isDragging: false };
+    });
   };
 
   render() {
@@ -167,6 +264,7 @@ class Grid extends React.Component<GridProps, GridState> {
         <div
           className="grid__container"
           style={this.getGridStyles(rows, columns)}
+          onMouseLeave={this.onMouseExitGrid}
         >
           {this.generateGridItems(rows, columns, nodes)}
         </div>

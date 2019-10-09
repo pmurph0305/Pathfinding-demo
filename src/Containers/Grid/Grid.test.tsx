@@ -89,4 +89,29 @@ describe("Mounted tests", () => {
       expect.arrayContaining(wrapper.state().path)
     );
   });
+
+  it("Updates grid state correctly on mouse events", () => {
+    let wrapper = mount<Grid>(<Grid rows={3} columns={3} />);
+    let gridItems = wrapper.find(".grid__item");
+    expect(gridItems.length).toEqual(9);
+    gridItems.at(1).simulate("mousedown");
+    expect(wrapper.state().isDragging).toEqual(true);
+    expect(wrapper.state().dragStartIndex).toEqual(1);
+    expect(wrapper.state().dragStartInitialWeight).toEqual(1);
+    expect(wrapper.state().isCreatingWalls).toEqual(true);
+    gridItems.at(4).simulate("mouseenter");
+    expect(wrapper.state().nodes[1]).toEqual(0);
+    expect(wrapper.state().nodes[4]).toEqual(0);
+    gridItems.at(4).simulate("mouseup");
+    expect(wrapper.state().nodes[4]).toEqual(0);
+    expect(wrapper.state().isDragging).toEqual(false);
+    expect(wrapper.state().dragEndIndex).toEqual(4);
+    gridItems.at(6).simulate("mousedown");
+    gridItems.at(6).simulate("mouseup");
+    expect(wrapper.state().nodes[6]).toEqual(0);
+    expect(wrapper.state().isDragging).toEqual(false);
+    gridItems.at(4).simulate("mousedown");
+    gridItems.at(4).simulate("mouseup");
+    expect(wrapper.state().nodes[4]).toEqual(1);
+  });
 });

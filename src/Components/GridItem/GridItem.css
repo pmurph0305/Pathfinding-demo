@@ -5,6 +5,7 @@
   align-items: center;
   border: 1px solid black;
   position: relative;
+  touch-action: none;
 }
 
 .grid__item--start {

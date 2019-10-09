@@ -7,21 +7,27 @@ type GridItemProps = {
   row: number;
   column: number;
   weight: number;
+  index: number;
+  status: GRID_ITEM_STATUS;
   onChange: (
     row: number,
     column: number
   ) => React.ChangeEventHandler<HTMLInputElement>;
-  index: number;
-  status: GRID_ITEM_STATUS;
+  onMouseEnterGridItem: (index: number) => React.MouseEventHandler;
+  onMouseDownGridItem: (index: number) => React.MouseEventHandler;
+  onMouseUpGridItem: (index: number) => React.MouseEventHandler;
 };
 
 const GridItem = ({
   row,
   column,
   weight,
-  onChange,
   index,
-  status
+  status,
+  onChange,
+  onMouseEnterGridItem,
+  onMouseDownGridItem,
+  onMouseUpGridItem
 }: GridItemProps) => {
   const getClassNameFromStatus = (status: GRID_ITEM_STATUS, weight: number) => {
     let className = "grid__item";
@@ -44,7 +50,12 @@ const GridItem = ({
   };
 
   return (
-    <div className={getClassNameFromStatus(status, weight)}>
+    <div
+      className={getClassNameFromStatus(status, weight)}
+      onMouseEnter={onMouseEnterGridItem(index)}
+      onMouseDown={onMouseDownGridItem(index)}
+      onMouseUp={onMouseUpGridItem(index)}
+    >
       <p className="item__index">i:{index}</p>
       <div className="item__data">
         <label htmlFor="weight-input">W:</label>
