@@ -125,6 +125,10 @@ export class BinaryMinHeapKV {
     return min;
   };
 
+  /**
+   * Determines if the minheap is empty
+   * @returns {boolean} true or false
+   */
   public isEmpty = () => {
     if (this.heap.length > 0) {
       return false;
@@ -132,6 +136,11 @@ export class BinaryMinHeapKV {
     return true;
   };
 
+  /**
+   * Determines whether value is in the heap
+   * @param value Value stored with key
+   * @returns {boolean} true or false
+   */
   public containsValue = (value: number) => {
     return this.heap.some(item => item.value === value);
   };

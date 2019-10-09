@@ -72,9 +72,10 @@ export class AStarAlgorithm extends PathAlgorithm {
                 this.getHeuristic(neighbourIndex);
             }
 
-            if (!minHeap.containsValue(neighbourIndex)) {
-              minHeap.insert(fScore[neighbourIndex], neighbourIndex);
-            }
+            // Don't need to check if minheap already contains the neighbour
+            // can just re-insert it instead of updating key / re-heapifying
+            // as it will be added to closedNodes if it's the lowest, and never added again.
+            minHeap.insert(fScore[neighbourIndex], neighbourIndex);
           }
         }
       });
