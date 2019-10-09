@@ -114,4 +114,14 @@ describe("Mounted tests", () => {
     gridItems.at(4).simulate("mouseup");
     expect(wrapper.state().nodes[4]).toEqual(1);
   });
+
+  // Note can't test elementFromPoint which is used for TouchEvents in jsdom.
+  it("Correctly stops drag if mouse goes out of bounds on mouse drag", () => {
+    let wrapper = mount<Grid>(<Grid rows={3} columns={3} />);
+    let gridItems = wrapper.find(".grid__item");
+    gridItems.at(1).simulate("mousedown");
+    expect(wrapper.state().isDragging).toEqual(true);
+    wrapper.simulate("mouseleave");
+    expect(wrapper.state().isDragging).toEqual(false);
+  });
 });

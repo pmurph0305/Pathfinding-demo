@@ -95,15 +95,14 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   /**
-   * Determines whether change node weight on
+   * Changes node at index to e.target.value
    * @param index index of element in nodes array
    */
-  onChangeNodeWeight = (row: number, column: number) => (
+  onChangeNodeWeight = (index: number) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let { columns } = this.props;
     let newNodes = [...this.state.nodes];
-    newNodes[row * columns + column] = parseInt(e.target.value);
+    newNodes[index] = parseInt(e.target.value);
     this.setState({ nodes: newNodes });
   };
 
@@ -186,29 +185,13 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   /**
-   * Updates state of isDragging to true, dragStartIndex to index,
-   * dragStartInitialWeight to node at index's weight,
-   * sets isCreatingWalls state based on node at index's weight
-   * @param index index in node array that mousedown was called on.
-   */
-  onMouseDownGridItem = (index: number) => (e: React.MouseEvent) => {
-    this.setState(state => {
-      return {
-        isDragging: true,
-        dragStartIndex: index,
-        dragStartInitialWeight: this.state.nodes[index],
-        isCreatingWalls: this.state.nodes[index] === 0 ? false : true
-      };
-    });
-  };
-
-  /**
    * Sets is dragging to false, and the dragEndIndex to index.
    * Changes the node at index to a wall or open if that nodes weight wasn't
    * changed between MouseDown & MouseUp.
    * @param index index of node array that mouseup event was called on.
    */
-  onMouseUpGridItem = (index: number) => (e: React.MouseEvent) => {
+  stopDragAt = (index: number) => {
+    // it was a mouse click
     if (
       this.state.dragStartIndex === index &&
       this.state.dragStartInitialWeight === this.state.nodes[index]
@@ -223,10 +206,41 @@ class Grid extends React.Component<GridProps, GridState> {
         };
       });
     } else {
+      // it was actually a drag.
       this.setState(state => {
         return { isDragging: false, dragEndIndex: index };
       });
     }
+  };
+
+  /**
+   * Sets isdragging state to false
+   * Used for when mouse exits grid area on drag,
+   * or if touch event ends.
+   */
+  stopDrag = () => {
+    // Would need an index to call stopDragAt, which would need a
+    // last updated index state.
+    this.setState(state => {
+      return { isDragging: false };
+    });
+  };
+
+  /**
+   * Updates state of isDragging to true, dragStartIndex to index,
+   * dragStartInitialWeight to node at index's weight,
+   * sets isCreatingWalls state based on node at index's weight
+   * @param index index in node array that mousedown was called on.
+   */
+  startDragAt = (index: number) => {
+    this.setState(state => {
+      return {
+        isDragging: true,
+        dragStartIndex: index,
+        dragStartInitialWeight: this.state.nodes[index],
+        isCreatingWalls: this.state.nodes[index] === 0 ? false : true
+      };
+    });
   };
 
   /**
@@ -235,7 +249,7 @@ class Grid extends React.Component<GridProps, GridState> {
    * and updates the node state.
    * @param index index in node array that mouse entered
    */
-  onMouseEnterGridItem = (index: number) => (e: React.MouseEvent) => {
+  continueDragAt = (index: number) => {
     if (this.state.isDragging) {
       if (index !== this.state.dragStartIndex) {
         // User is dragging, so switch between walls & open tiles.
@@ -250,12 +264,34 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   /**
+   * Update drag state variables on mouse down.
+   * @param index index in node array that mousedown was called on.
+   */
+  onMouseDownGridItem = (index: number) => (e: React.MouseEvent) => {
+    this.startDragAt(index);
+  };
+
+  /**
+   * Update drag state on mouse up.
+   * @param index index of node array that mouseup event was called on.
+   */
+  onMouseUpGridItem = (index: number) => (e: React.MouseEvent) => {
+    this.stopDragAt(index);
+  };
+
+  /**
+   * Upgrade node state on mouse enter
+   * @param index index in node array that mouse entered
+   */
+  onMouseEnterGridItem = (index: number) => (e: React.MouseEvent) => {
+    this.continueDragAt(index);
+  };
+
+  /**
    * Sets state of dragging to false
    */
   onMouseExitGrid = (e: React.MouseEvent) => {
-    this.setState(state => {
-      return { isDragging: false };
-    });
+    this.stopDrag();
   };
 
   /**
@@ -272,23 +308,9 @@ class Grid extends React.Component<GridProps, GridState> {
       if (data !== null) {
         let index = parseInt(data);
         if (this.state.isDragging === false) {
-          // set state to dragging if its not & start index / creating walls.
-          this.setState(state => {
-            return {
-              isDragging: true,
-              dragStartIndex: index,
-              dragStartInitialWeight: this.state.nodes[index],
-              isCreatingWalls: this.state.nodes[index] === 0 ? false : true
-            };
-          });
+          this.startDragAt(index);
         } else {
-          // update the node list.
-          let nodes = [...this.state.nodes];
-          nodes[index] = this.state.isCreatingWalls ? 0 : 1;
-          nodes[this.state.dragStartIndex] = nodes[index];
-          this.setState(state => {
-            return { nodes: nodes };
-          });
+          this.continueDragAt(index);
         }
       }
     }
@@ -298,9 +320,7 @@ class Grid extends React.Component<GridProps, GridState> {
    * Sets is dragging state to false.
    */
   onTouchEndGridItem = (e: React.TouchEvent) => {
-    this.setState(state => {
-      return { isDragging: false };
-    });
+    this.stopDrag();
   };
 
   render() {

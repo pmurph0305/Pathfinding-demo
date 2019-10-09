@@ -9,10 +9,7 @@ type GridItemProps = {
   weight: number;
   index: number;
   status: GRID_ITEM_STATUS;
-  onChange: (
-    row: number,
-    column: number
-  ) => React.ChangeEventHandler<HTMLInputElement>;
+  onChange: (index: number) => React.ChangeEventHandler<HTMLInputElement>;
   onMouseEnterGridItem: (index: number) => React.MouseEventHandler;
   onMouseDownGridItem: (index: number) => React.MouseEventHandler;
   onMouseUpGridItem: (index: number) => React.MouseEventHandler;
@@ -71,7 +68,7 @@ const GridItem = ({
           className="item__input"
           type="number"
           value={weight}
-          onChange={onChange(row, column)}
+          onChange={onChange(index)}
           min={0}
         />
       </div>
