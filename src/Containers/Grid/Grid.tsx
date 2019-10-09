@@ -85,6 +85,8 @@ class Grid extends React.Component<GridProps, GridState> {
             onMouseEnterGridItem={this.onMouseEnterGridItem}
             onMouseDownGridItem={this.onMouseDownGridItem}
             onMouseUpGridItem={this.onMouseUpGridItem}
+            onTouchMove={this.onTouchMoveGridItem}
+            onTouchEnd={this.onTouchEndGridItem}
           />
         );
       }
@@ -251,6 +253,51 @@ class Grid extends React.Component<GridProps, GridState> {
    * Sets state of dragging to false
    */
   onMouseExitGrid = (e: React.MouseEvent) => {
+    this.setState(state => {
+      return { isDragging: false };
+    });
+  };
+
+  /**
+   * Updates state for nodes & dragging based on element touch is over.
+   */
+  onTouchMoveGridItem = (e: React.TouchEvent) => {
+    let el = document.elementFromPoint(
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    );
+    // need to make sure we have a valid element & valid data.
+    if (el !== null) {
+      let data = el.getAttribute("data-index");
+      if (data !== null) {
+        let index = parseInt(data);
+        if (this.state.isDragging === false) {
+          // set state to dragging if its not & start index / creating walls.
+          this.setState(state => {
+            return {
+              isDragging: true,
+              dragStartIndex: index,
+              dragStartInitialWeight: this.state.nodes[index],
+              isCreatingWalls: this.state.nodes[index] === 0 ? false : true
+            };
+          });
+        } else {
+          // update the node list.
+          let nodes = [...this.state.nodes];
+          nodes[index] = this.state.isCreatingWalls ? 0 : 1;
+          nodes[this.state.dragStartIndex] = nodes[index];
+          this.setState(state => {
+            return { nodes: nodes };
+          });
+        }
+      }
+    }
+  };
+
+  /**
+   * Sets is dragging state to false.
+   */
+  onTouchEndGridItem = (e: React.TouchEvent) => {
     this.setState(state => {
       return { isDragging: false };
     });

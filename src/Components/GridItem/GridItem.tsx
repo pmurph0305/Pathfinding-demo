@@ -16,6 +16,8 @@ type GridItemProps = {
   onMouseEnterGridItem: (index: number) => React.MouseEventHandler;
   onMouseDownGridItem: (index: number) => React.MouseEventHandler;
   onMouseUpGridItem: (index: number) => React.MouseEventHandler;
+  onTouchMove: React.TouchEventHandler;
+  onTouchEnd: React.TouchEventHandler;
 };
 
 const GridItem = ({
@@ -27,7 +29,9 @@ const GridItem = ({
   onChange,
   onMouseEnterGridItem,
   onMouseDownGridItem,
-  onMouseUpGridItem
+  onMouseUpGridItem,
+  onTouchMove,
+  onTouchEnd
 }: GridItemProps) => {
   const getClassNameFromStatus = (status: GRID_ITEM_STATUS, weight: number) => {
     let className = "grid__item";
@@ -55,6 +59,9 @@ const GridItem = ({
       onMouseEnter={onMouseEnterGridItem(index)}
       onMouseDown={onMouseDownGridItem(index)}
       onMouseUp={onMouseUpGridItem(index)}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      data-index={index}
     >
       <p className="item__index">i:{index}</p>
       <div className="item__data">
