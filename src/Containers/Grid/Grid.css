@@ -1,5 +1,15 @@
 .grid__container {
-  margin: auto;
   display: grid;
-  height: 100%;
+  grid-gap: 5px;
+}
+
+.item__container--square {
+  position: relative;
+}
+
+/* Keeps contains square. */
+.item__container--square::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
 }

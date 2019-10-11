@@ -14,11 +14,10 @@ it("renders without crashing", () => {
 
 describe("Shallow testing", () => {
   it("Calculates grid-template-rows and grid-template-columns correctly", () => {
-    let wrapper = shallow<Grid>(<Grid rows={4} columns={2} />);
-    let template = wrapper.instance().getGridTemplate(4, 2);
+    let wrapper = shallow<Grid>(<Grid rows={4} columns={4} />);
+    let template = wrapper.instance().getGridTemplate(4);
     expect(template).toEqual({
-      gridTemplateColumns: "50% 50% ",
-      gridTemplateRows: "25% 25% 25% 25% "
+      gridTemplateColumns: "1fr 1fr 1fr 1fr "
     });
   });
 
@@ -37,8 +36,7 @@ describe("Shallow testing", () => {
     expect(styles).toEqual({
       width: "100%",
       height: "50%",
-      gridTemplateColumns: "50% 50% ",
-      gridTemplateRows: "100% "
+      gridTemplateColumns: "1fr 1fr "
     });
   });
 

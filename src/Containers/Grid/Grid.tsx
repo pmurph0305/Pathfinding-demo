@@ -42,9 +42,17 @@ class Grid extends React.Component<GridProps, GridState> {
     };
   }
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
+  componentDidUpdate(prevProps: GridProps) {
+    if (
+      this.props.columns !== prevProps.columns ||
+      this.props.rows !== prevProps.rows
+    ) {
+      this.setState({
+        nodes: new Array(this.props.rows * this.props.columns).fill(1),
+        path: []
+      });
+    }
+  }
 
   /**
    * Generates grid items
@@ -74,20 +82,23 @@ class Grid extends React.Component<GridProps, GridState> {
           status = GRID_ITEM_STATUS.WALL;
         }
         gridItems.push(
-          <GridItem
-            status={status}
-            key={"gi_" + x + "_" + y}
-            row={y}
-            column={x}
-            weight={nodes[y * columns + x]}
-            index={y * columns + x}
-            onChange={this.onChangeNodeWeight}
-            onMouseEnterGridItem={this.onMouseEnterGridItem}
-            onMouseDownGridItem={this.onMouseDownGridItem}
-            onMouseUpGridItem={this.onMouseUpGridItem}
-            onTouchMove={this.onTouchMoveGridItem}
-            onTouchEnd={this.onTouchEndGridItem}
-          />
+          <div className="item__container--square" key={"ics" + x + "_" + y}>
+            <GridItem
+              status={status}
+              key={"gi_" + x + "_" + y}
+              row={y}
+              column={x}
+              weight={nodes[y * columns + x]}
+              index={y * columns + x}
+              displayWeight={columns < 7 && rows < 7 ? true : false}
+              onChange={this.onChangeNodeWeight}
+              onMouseEnterGridItem={this.onMouseEnterGridItem}
+              onMouseDownGridItem={this.onMouseDownGridItem}
+              onMouseUpGridItem={this.onMouseUpGridItem}
+              onTouchMove={this.onTouchMoveGridItem}
+              onTouchEnd={this.onTouchEndGridItem}
+            />
+          </div>
         );
       }
     }
@@ -113,7 +124,7 @@ class Grid extends React.Component<GridProps, GridState> {
    * @returns  React.CSSProperties { width, height, gridTemplateColumns, gridTemplateRows }
    */
   getGridStyles = (rows: number, columns: number) => {
-    let style = this.getGridTemplate(rows, columns);
+    let style = this.getGridTemplate(columns);
     Object.assign(style, this.calcGridHeightAndWidth(rows, columns));
     return style;
   };
@@ -141,22 +152,16 @@ class Grid extends React.Component<GridProps, GridState> {
 
   /**
    * Gets grid template
-   * @param rows numbers of rows
    * @param columns number of columns
    * @returns React.CSSProperties { gridTemplateColumns: value, gridTemplateRows: value }
    */
-  getGridTemplate = (rows: number, columns: number) => {
+  getGridTemplate = (columns: number) => {
     let templateColumns = "";
     for (let i = 0; i < columns; i++) {
-      templateColumns += 100 / columns + "% ";
-    }
-    let templateRows = "";
-    for (let i = 0; i < rows; i++) {
-      templateRows += 100 / rows + "% ";
+      templateColumns += "1fr ";
     }
     let gridTemplate: React.CSSProperties = {
-      gridTemplateColumns: templateColumns,
-      gridTemplateRows: templateRows
+      gridTemplateColumns: templateColumns
     };
     return gridTemplate;
   };
@@ -269,6 +274,7 @@ class Grid extends React.Component<GridProps, GridState> {
    */
   onMouseDownGridItem = (index: number) => (e: React.MouseEvent) => {
     this.startDragAt(index);
+    e.preventDefault();
   };
 
   /**
