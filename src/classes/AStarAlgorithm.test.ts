@@ -59,6 +59,18 @@ it("Calculates a non-greedy path properly", () => {
 
   let aStarNotGreedy = new AStarAlgorithm(testDataGreedy);
   expect(aStarNotGreedy.calcPath().length).toEqual(9);
+
+  let bigTest = {
+    nodes: new Array(121).fill(1),
+    start: 0,
+    end: 120,
+    rows: 11,
+    columns: 11,
+    path: []
+  };
+
+  let aStarBig = new AStarAlgorithm(bigTest);
+  expect(aStarBig.calcPath().length).toEqual(21);
 });
 
 it("Calculates a greedy path properly", () => {

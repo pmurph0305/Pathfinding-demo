@@ -5,8 +5,8 @@ import Grid from "./Containers/Grid/Grid";
 import "./App.css";
 
 const App: React.FC = () => {
-  const [rows, setRows] = useState(5);
-  const [columns, setColumns] = useState(5);
+  const [rows, setRows] = useState(11);
+  const [columns, setColumns] = useState(11);
 
   return (
     <div className="App">

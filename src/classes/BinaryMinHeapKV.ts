@@ -1,3 +1,5 @@
+import { getHeapSnapshot } from "v8";
+
 export interface HeapData {
   key: number;
   value: number;
@@ -76,14 +78,20 @@ export class BinaryMinHeapKV {
       let right = getRight(index);
       // have to check if they are undefined before comparisons.
       if (heap[left] && heap[right]) {
-        // will swap right with index if left === right.
-        swap(isKeyALessThanB(left, right) ? left : right, index);
+        // need to make sure at least one of them is lower before we swap...
+        if (isKeyALessThanB(left, index) || isKeyALessThanB(right, index)) {
+          // will swap right with index if left === right.
+          let lowerIndex = isKeyALessThanB(left, right) ? left : right;
+          swap(lowerIndex, index);
+          siftDown(lowerIndex);
+        }
       } else if (heap[left] && isKeyALessThanB(left, index)) {
-        // a node can have a left child with no right child
         swap(left, index);
         siftDown(left);
+      } else if (heap[right] && isKeyALessThanB(right, index)) {
+        swap(right, index);
+        siftDown(right);
       }
-      // node's can't have right child with no left child, so no need to check.
     }
   };
 
