@@ -49,16 +49,18 @@ export class Pathfinder {
     switch (algorithm) {
       case PATH_ALGORITHM.ASTAR_GREEDY:
         alg = new AStarAlgorithm(data);
+        this.path = alg.calcPath(true);
         break;
       case PATH_ALGORITHM.ASTAR:
         alg = new AStarAlgorithm(data);
+        this.path = alg.calcPath();
         break;
       default:
         alg = new DijkstraAlgorithm(data);
+        this.path = alg.calcPath();
         break;
     }
     this.pathAlgorithm = alg;
-    this.path = alg.calcPath();
     return this.path;
   }
 

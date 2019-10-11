@@ -18,7 +18,7 @@ const App: React.FC = () => {
             id="rows"
             className="rc__input"
             type="number"
-            min={0}
+            min={3}
             value={rows}
             onChange={e => setRows(parseInt(e.target.value))}
           />
@@ -27,7 +27,7 @@ const App: React.FC = () => {
             id="rows"
             className="rc__input"
             type="number"
-            min={0}
+            min={3}
             value={columns}
             onChange={e => setColumns(parseInt(e.target.value))}
           />

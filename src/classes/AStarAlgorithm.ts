@@ -1,5 +1,6 @@
 import { PathAlgorithm, pathNode, pathData } from "./PathAlgorithm";
 import { BinaryMinHeapKV } from "./BinaryMinHeapKV";
+import { GRID_ITEM_STATUS } from "../Constants/enums";
 
 export class AStarAlgorithm extends PathAlgorithm {
   endX: number;
@@ -26,7 +27,7 @@ export class AStarAlgorithm extends PathAlgorithm {
     let closedNodes = new Set<number>();
 
     // the cost of the cheapest path from start to n currently known
-    let gScore = new Array(pathNodes.length).fill(Infinity);
+    let gScore: number[] = new Array(pathNodes.length).fill(Infinity);
     gScore[start] = 0;
 
     // fScore[n] = gScores[n] + heuristic(n)
@@ -68,15 +69,15 @@ export class AStarAlgorithm extends PathAlgorithm {
                 newGScore + this.getHeuristic(neighbourIndex);
             } else {
               // greedy only cares about the heuristic, and its weight
-              fScore[neighbourIndex] =
-                pathNodes[neighbourIndex].weight +
-                this.getHeuristic(neighbourIndex);
+              fScore[neighbourIndex] = this.getHeuristic(neighbourIndex);
             }
 
             // Don't need to check if minheap already contains the neighbour
             // can just re-insert it instead of updating key / re-heapifying
             // as it will be added to closedNodes if it's the lowest, and never added again.
+
             minHeap.insert(fScore[neighbourIndex], neighbourIndex);
+            this.buildCurrentStep(closedNodes, pathNodes);
           }
         }
       });
@@ -103,4 +104,19 @@ export class AStarAlgorithm extends PathAlgorithm {
     let x = index - y * this.columns;
     return Math.abs(this.endY - y) + Math.abs(this.endX - x);
   };
+
+  buildCurrentStep(closedNodes: Set<number>, pathNodes: pathNode[]) {
+    let stepNodes: GRID_ITEM_STATUS[] = pathNodes.map((node, index) => {
+      if (node.weight === 0) {
+        return GRID_ITEM_STATUS.WALL;
+      }
+      if (node.prevNode !== undefined && closedNodes.has(index)) {
+        return GRID_ITEM_STATUS.EXPLORED;
+      } else if (node.prevNode !== undefined) {
+        return GRID_ITEM_STATUS.EXPLORING;
+      }
+      return GRID_ITEM_STATUS.OPEN;
+    });
+    this.pathStepArray.push(stepNodes);
+  }
 }
