@@ -35,6 +35,18 @@ it("Gets neighbors correctly", () => {
   let neighbours4 = pathAlgorithm2.getNodeNeighbours(7);
   expect(neighbours4).toEqual(expect.arrayContaining([5, 6]));
   expect(neighbours4.length).toEqual(2);
+
+  let bigTest = {
+    nodes: new Array(121).fill(1),
+    start: 0,
+    end: 120,
+    rows: 11,
+    columns: 11,
+    path: []
+  };
+  let pathAlgorithm3 = new PathAlgorithm(bigTest);
+  let neighbours1 = pathAlgorithm3.getNodeNeighbours(1);
+  expect(neighbours3.length).toEqual(3);
 });
 
 it("creates the node array correctly", () => {

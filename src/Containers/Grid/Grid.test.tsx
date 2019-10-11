@@ -67,13 +67,13 @@ describe("Mounted tests", () => {
     let wrapper = mount<Grid>(<Grid rows={3} columns={5} />);
     let gridItems = wrapper.find(GridItem);
     expect(gridItems.length).toEqual(15);
-    let input = gridItems.first().find("input");
+    let input = gridItems.at(3).find("input");
     expect(input.length).toEqual(1);
     input.simulate("change", { target: { value: 2 } });
-    expect(wrapper.state().nodes[0]).toEqual(2);
+    expect(wrapper.state().nodes[3]).toEqual(2);
     expect(wrapper.find(".grid__item--wall").length).toEqual(0);
     input.simulate("change", { target: { value: 0 } });
-    expect(wrapper.state().nodes[0]).toEqual(0);
+    expect(wrapper.state().nodes[3]).toEqual(0);
     expect(wrapper.find(".grid__item--wall").length).toEqual(1);
   });
 
@@ -121,5 +121,13 @@ describe("Mounted tests", () => {
     expect(wrapper.state().isDragging).toEqual(true);
     wrapper.simulate("mouseleave");
     expect(wrapper.state().isDragging).toEqual(false);
+  });
+
+  it("Resets state on column or row change", () => {
+    let wrapper = mount<Grid>(<Grid rows={3} columns={3} />);
+    wrapper.setState({ path: [1] });
+    expect(wrapper.state().path).toEqual([1]);
+    wrapper.setProps({ rows: 5 });
+    expect(wrapper.state().path).toEqual([]);
   });
 });

@@ -1,5 +1,3 @@
-import { getHeapSnapshot } from "v8";
-
 export interface HeapData {
   key: number;
   value: number;

@@ -5,6 +5,7 @@ import { GRID_ITEM_STATUS, PATH_ALGORITHM } from "../../Constants/enums";
 
 import "./Grid.css";
 import { Pathfinder } from "../../Classes/Pathfinder";
+import { pathNode } from "../../Classes/PathAlgorithm";
 
 type GridProps = {
   rows: number;
@@ -23,6 +24,8 @@ type GridState = {
   dragStartIndex: number;
   dragStartInitialWeight: number;
   dragEndIndex: number;
+  pathNodes: pathNode[];
+  pathStep: GRID_ITEM_STATUS[];
 };
 
 class Grid extends React.Component<GridProps, GridState> {
@@ -38,8 +41,14 @@ class Grid extends React.Component<GridProps, GridState> {
       isCreatingWalls: false,
       dragStartInitialWeight: 0,
       dragStartIndex: 0,
-      dragEndIndex: 0
+      dragEndIndex: 0,
+      pathNodes: [],
+      pathStep: new Array(props.rows * props.columns).fill(
+        GRID_ITEM_STATUS.OPEN
+      )
     };
+    this.state.pathStep[0] = GRID_ITEM_STATUS.START;
+    this.state.pathStep[this.state.pathStep.length - 1] = GRID_ITEM_STATUS.END;
   }
 
   componentDidUpdate(prevProps: GridProps) {
@@ -47,12 +56,20 @@ class Grid extends React.Component<GridProps, GridState> {
       this.props.columns !== prevProps.columns ||
       this.props.rows !== prevProps.rows
     ) {
-      this.setState({
-        nodes: new Array(this.props.rows * this.props.columns).fill(1),
-        path: []
-      });
+      this.resetPathState(true);
     }
   }
+
+  resetPathState = (resetNodes = false) => {
+    this.setState({
+      nodes: resetNodes
+        ? new Array(this.props.rows * this.props.columns).fill(1)
+        : this.state.nodes,
+      path: [],
+      pathNodes: [],
+      pathStep: []
+    });
+  };
 
   /**
    * Generates grid items
@@ -68,18 +85,19 @@ class Grid extends React.Component<GridProps, GridState> {
     let gridItems = [];
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < columns; x++) {
-        let status = GRID_ITEM_STATUS.OPEN;
-        if (this.state.path.includes(y * columns + x)) {
+        let i = y * columns + x;
+        let status = this.state.pathStep[i];
+        if (this.state.path.includes(i)) {
           status = GRID_ITEM_STATUS.PATH;
+        }
+        if (nodes[i] === 0) {
+          status = GRID_ITEM_STATUS.WALL;
         }
         if (x === 0 && y === 0) {
           status = GRID_ITEM_STATUS.START;
         }
         if (x === columns - 1 && y === rows - 1) {
           status = GRID_ITEM_STATUS.END;
-        }
-        if (nodes[y * columns + x] === 0) {
-          status = GRID_ITEM_STATUS.WALL;
         }
         gridItems.push(
           <div className="item__container--square" key={"ics" + x + "_" + y}>
@@ -88,9 +106,9 @@ class Grid extends React.Component<GridProps, GridState> {
               key={"gi_" + x + "_" + y}
               row={y}
               column={x}
-              weight={nodes[y * columns + x]}
+              weight={nodes[y * columns + x] ? nodes[y * columns + x] : 0}
               index={y * columns + x}
-              displayWeight={columns < 7 && rows < 7 ? true : false}
+              displayWeight={columns > 7 && rows > 7 ? false : true}
               onChange={this.onChangeNodeWeight}
               onMouseEnterGridItem={this.onMouseEnterGridItem}
               onMouseDownGridItem={this.onMouseDownGridItem}
@@ -171,6 +189,7 @@ class Grid extends React.Component<GridProps, GridState> {
    * calculate a path and display it.
    */
   onCalculatePath = () => {
+    this.resetPathState();
     let pathfinder = new Pathfinder(
       this.state.nodes,
       this.props.rows,
@@ -179,8 +198,34 @@ class Grid extends React.Component<GridProps, GridState> {
       this.state.nodes.length - 1
     );
     let path = pathfinder.calcPath(this.state.algorithm);
-    this.setState({ path: path });
+    let pathNodes = pathfinder.getPathNodes();
+    this.setState({ path: path, pathNodes: pathNodes });
   };
+
+  onCalculatePathSteps = () => {
+    this.resetPathState();
+    let pathfinder = new Pathfinder(
+      this.state.nodes,
+      this.props.rows,
+      this.props.columns,
+      0,
+      this.state.nodes.length - 1
+    );
+    pathfinder.calcPath(this.state.algorithm);
+    this.DisplayPathSteps(pathfinder);
+  };
+
+  async DisplayPathSteps(pathfinder: Pathfinder) {
+    let steps = pathfinder.getPathStepsLength();
+    let path = pathfinder.path;
+    for (let i = 0; i < steps; i++) {
+      this.setState({ pathStep: pathfinder.getNextPathStep() });
+      await this.wait(5);
+    }
+    this.setState({ path: path });
+  }
+
+  wait = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   /**
    * Changes the algorithm state based on select elements value.
@@ -238,6 +283,7 @@ class Grid extends React.Component<GridProps, GridState> {
    * @param index index in node array that mousedown was called on.
    */
   startDragAt = (index: number) => {
+    this.resetPathState();
     this.setState(state => {
       return {
         isDragging: true,
@@ -343,6 +389,9 @@ class Grid extends React.Component<GridProps, GridState> {
         </div>
         <button id="calc_path" onClick={this.onCalculatePath}>
           Calculate Path
+        </button>
+        <button id="calc_path_steps" onClick={this.onCalculatePathSteps}>
+          Show Path Steps
         </button>
         <select id="select_algorithm" onChange={this.onChangeAlgorithm}>
           <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>

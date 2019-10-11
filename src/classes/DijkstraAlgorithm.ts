@@ -1,11 +1,12 @@
 import { PathAlgorithm, pathNode } from "./PathAlgorithm";
+import { GRID_ITEM_STATUS } from "../Constants/enums";
 
 export class DijkstraAlgorithm extends PathAlgorithm {
   /**
    * Calculates path using Dijkstra's Algorithm
    * @returns Array of numbers representing index's of path in order.
    */
-  calcPath() {
+  calcPath = () => {
     let { start, end, nodes } = this;
     let pathNodes: pathNode[] = this.createNodeArray(nodes);
     // Dijkstra's Algorithm
@@ -24,7 +25,7 @@ export class DijkstraAlgorithm extends PathAlgorithm {
     });
     // Set the initial node as the current node
     let cNode = pathNodes[start];
-    while (true) {
+    while (unvisited.length > 0) {
       // For the current node, go through all of it's neighbors.
       let neighbours = this.getNodeNeighbours(cNode.i);
       // These also prevent the esLint no-loop-func error.
@@ -48,6 +49,8 @@ export class DijkstraAlgorithm extends PathAlgorithm {
       unvisited.splice(unvisited.indexOf(cNode.i), 1);
       // If destination node has been visited, then stop.
       if (!unvisited.includes(end)) {
+        //this.buildCurrentStep(pathNodes);
+        this.pathNodeArray = pathNodes;
         return this.buildPathArray(pathNodes);
       }
       // end will be infinity if it hasn't been found yet,
@@ -60,10 +63,32 @@ export class DijkstraAlgorithm extends PathAlgorithm {
         }
       });
       cNode = pathNodes[smallestDistIndex];
+
+      this.buildCurrentStep(pathNodes, unvisited, cNode);
       // if the smallest distance is infinity still, there is no path, so end.
       if (cNode.distance === Infinity) {
         return [];
       }
     }
+    return [];
+  };
+
+  buildCurrentStep(
+    pathNodes: pathNode[],
+    unvisited: number[],
+    nextNode: pathNode
+  ) {
+    let stepNodes: GRID_ITEM_STATUS[] = pathNodes.map((node, index) => {
+      if (node.weight === 0) {
+        return GRID_ITEM_STATUS.WALL;
+      } else if (node.prevNode !== undefined && unvisited.includes(index)) {
+        return GRID_ITEM_STATUS.EXPLORING;
+      } else if (node.prevNode !== undefined) {
+        return GRID_ITEM_STATUS.EXPLORED;
+      }
+      return GRID_ITEM_STATUS.OPEN;
+    });
+
+    this.pathStepArray.push(stepNodes);
   }
 }

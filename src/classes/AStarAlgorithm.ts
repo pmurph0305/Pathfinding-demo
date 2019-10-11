@@ -42,6 +42,7 @@ export class AStarAlgorithm extends PathAlgorithm {
       let currentNodeIndex = minHeap.extractMin().value;
       let currentNode = pathNodes[currentNodeIndex];
       if (currentNode.i === end) {
+        this.pathNodeArray = pathNodes;
         return this.buildPathArray(pathNodes);
       }
 

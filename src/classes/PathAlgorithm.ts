@@ -1,3 +1,5 @@
+import { GRID_ITEM_STATUS } from "../Constants/enums";
+
 export type pathNode = {
   i: number;
   distance: number;
@@ -21,6 +23,9 @@ export class PathAlgorithm {
   rows: number;
   columns: number;
   path: number[];
+  pathNodeArray: pathNode[];
+  pathStepArray: [GRID_ITEM_STATUS[]];
+  pathStepCurrent: number;
   constructor(data: pathData) {
     this.nodes = data.nodes;
     this.rows = data.rows;
@@ -28,6 +33,9 @@ export class PathAlgorithm {
     this.start = data.start;
     this.end = data.end;
     this.path = [];
+    this.pathNodeArray = [];
+    this.pathStepArray = [[]];
+    this.pathStepCurrent = 0;
   }
 
   /**
@@ -39,6 +47,9 @@ export class PathAlgorithm {
     let nodeArray: pathNode[] = nodes.map((value, i) => {
       return { i, distance: 0, weight: value, prevNode: undefined };
     });
+    //  console.log("INITIAL");
+    //  console.log(nodeArray[5].prevNode);
+    // console.log("--INITIAL--");
     return nodeArray;
   }
 
@@ -85,6 +96,15 @@ export class PathAlgorithm {
     path.push(pathNode.i);
     path.reverse();
     this.path = path;
+    this.pathStepCurrent = 0;
     return path;
+  }
+
+  getNextPathStep() {
+    if (this.pathStepArray[this.pathStepCurrent + 1]) {
+      this.pathStepCurrent += 1;
+      return this.pathStepArray[this.pathStepCurrent];
+    }
+    return this.pathStepArray[this.pathStepCurrent];
   }
 }

@@ -5,12 +5,12 @@ import Grid from "./Containers/Grid/Grid";
 import "./App.css";
 
 const App: React.FC = () => {
-  const [rows, setRows] = useState(11);
-  const [columns, setColumns] = useState(11);
+  const [rows, setRows] = useState(8);
+  const [columns, setColumns] = useState(8);
 
   return (
     <div className="App">
-      <div style={{ width: "90vh", margin: "auto" }}>
+      <div style={{ width: "500px", margin: "auto" }}>
         <Grid rows={rows} columns={columns} />
         <div className="rc__container">
           <label htmlFor="rows">Rows:</label>
