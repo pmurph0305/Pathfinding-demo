@@ -3,6 +3,25 @@
   margin: auto;
 }
 
+.grid__flexContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex__innerContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3em;
+}
+
+.flex__button {
+  width: 45%;
+}
+
+.input__item {
+  margin-left: 0.5em;
+}
+
 .item__container--square {
   position: relative;
 }
@@ -12,4 +31,26 @@
   content: "";
   display: block;
   padding-top: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+  .grid__flexContainer {
+    margin: auto;
+    width: 100%;
+  }
+  .flex__innerContainer {
+    flex-direction: column;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .flex__button {
+    width: 70%;
+    margin: 0.3em auto;
+  }
+  .input__container {
+    margin: 0.3em auto;
+  }
+  .input__item {
+    width: 50%;
+  }
 }

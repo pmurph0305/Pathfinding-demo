@@ -26,6 +26,7 @@ type GridState = {
   dragEndIndex: number;
   pathNodes: pathNode[];
   pathStep: GRID_ITEM_STATUS[];
+  waitTime: number;
 };
 
 class Grid extends React.Component<GridProps, GridState> {
@@ -45,7 +46,8 @@ class Grid extends React.Component<GridProps, GridState> {
       pathNodes: [],
       pathStep: new Array(props.rows * props.columns).fill(
         GRID_ITEM_STATUS.OPEN
-      )
+      ),
+      waitTime: 5
     };
     this.state.pathStep[0] = GRID_ITEM_STATUS.START;
     this.state.pathStep[this.state.pathStep.length - 1] = GRID_ITEM_STATUS.END;
@@ -136,6 +138,16 @@ class Grid extends React.Component<GridProps, GridState> {
   };
 
   /**
+   * Set waitTime state of grid
+   * @param val Value to set waitTime to
+   */
+  setWaitTime = (val: number) => {
+    this.setState(state => {
+      return { waitTime: val };
+    });
+  };
+
+  /**
    * Gets grid styles
    * @param rows number of rows
    * @param columns number of columns
@@ -220,7 +232,7 @@ class Grid extends React.Component<GridProps, GridState> {
     let path = pathfinder.path;
     for (let i = 0; i < steps; i++) {
       this.setState({ pathStep: pathfinder.getNextPathStep() });
-      await this.wait(5);
+      await this.wait(this.state.waitTime);
     }
     this.setState({ path: path });
   }
@@ -376,7 +388,7 @@ class Grid extends React.Component<GridProps, GridState> {
 
   render() {
     const { rows, columns } = this.props;
-    const { nodes } = this.state;
+    const { nodes, waitTime } = this.state;
     return (
       <>
         <div
@@ -386,17 +398,49 @@ class Grid extends React.Component<GridProps, GridState> {
         >
           {this.generateGridItems(rows, columns, nodes)}
         </div>
-        <button id="calc_path" onClick={this.onCalculatePath}>
-          Calculate Path
-        </button>
-        <button id="calc_path_steps" onClick={this.onCalculatePathSteps}>
-          Show Path Steps
-        </button>
-        <select id="select_algorithm" onChange={this.onChangeAlgorithm}>
-          <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>
-          <option value={PATH_ALGORITHM.ASTAR}>A*</option>
-          <option value={PATH_ALGORITHM.ASTAR_GREEDY}>A* Greedy</option>
-        </select>
+        <div className="grid__flexContainer">
+          <div className="flex__innerContainer">
+            <button
+              id="calc_path"
+              className="flex__button"
+              onClick={this.onCalculatePath}
+            >
+              Calculate Path
+            </button>
+            <button
+              id="calc_path_steps"
+              className="flex__button"
+              onClick={this.onCalculatePathSteps}
+            >
+              Show Path Steps
+            </button>
+          </div>
+          <div className="flex__innerContainer">
+            <div className="input__container">
+              <label htmlFor="select_algorithm">Algorithm:</label>
+              <select
+                id="select_algorithm"
+                className="input__item"
+                onChange={this.onChangeAlgorithm}
+              >
+                <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>
+                <option value={PATH_ALGORITHM.ASTAR}>A*</option>
+                <option value={PATH_ALGORITHM.ASTAR_GREEDY}>A* Greedy</option>
+              </select>
+            </div>
+            <div className="input__container">
+              <label htmlFor="waitTime">Step Delay Time:</label>
+              <input
+                id="waitTime"
+                className="input__item"
+                type="number"
+                min={3}
+                value={waitTime}
+                onChange={e => this.setWaitTime(parseInt(e.target.value))}
+              />
+            </div>
+          </div>
+        </div>
       </>
     );
   }

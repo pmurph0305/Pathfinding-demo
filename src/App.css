@@ -4,3 +4,26 @@ body,
 .App {
   height: 100%;
 }
+
+.app__container {
+  margin: auto;
+  max-width: calc(100vh - 10%);
+}
+
+.app__inputContainer {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.2em;
+}
+
+@media only screen and (max-width: 600px) {
+  .app__inputContainer {
+    flex-direction: column;
+  }
+
+  .input__container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
