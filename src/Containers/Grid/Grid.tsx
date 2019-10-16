@@ -332,7 +332,9 @@ class Grid extends React.Component<GridProps, GridState> {
    */
   onMouseDownGridItem = (index: number) => (e: React.MouseEvent) => {
     this.startDragAt(index);
-    e.preventDefault();
+    if (e.target === e.currentTarget) {
+      e.preventDefault();
+    }
   };
 
   /**
