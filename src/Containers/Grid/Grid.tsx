@@ -51,6 +51,8 @@ class Grid extends React.Component<GridProps, GridState> {
     };
     this.state.pathStep[0] = GRID_ITEM_STATUS.START;
     this.state.pathStep[this.state.pathStep.length - 1] = GRID_ITEM_STATUS.END;
+    this.state.nodes[0] = -1;
+    this.state.nodes[this.state.nodes.length - 1] = -2;
   }
 
   componentDidUpdate(prevProps: GridProps) {
@@ -63,10 +65,11 @@ class Grid extends React.Component<GridProps, GridState> {
   }
 
   resetPathState = (resetNodes = false) => {
+    let nodes = new Array(this.props.rows * this.props.columns).fill(1);
+    nodes[0] = -1;
+    nodes[nodes.length - 1] = -2;
     this.setState({
-      nodes: resetNodes
-        ? new Array(this.props.rows * this.props.columns).fill(1)
-        : this.state.nodes,
+      nodes: resetNodes ? nodes : this.state.nodes,
       path: [],
       pathNodes: [],
       pathStep: []
@@ -95,10 +98,10 @@ class Grid extends React.Component<GridProps, GridState> {
         if (nodes[i] === 0) {
           status = GRID_ITEM_STATUS.WALL;
         }
-        if (x === 0 && y === 0) {
+        if (nodes[i] === -1) {
           status = GRID_ITEM_STATUS.START;
         }
-        if (x === columns - 1 && y === rows - 1) {
+        if (nodes[i] === -2) {
           status = GRID_ITEM_STATUS.END;
         }
         gridItems.push(
@@ -206,8 +209,8 @@ class Grid extends React.Component<GridProps, GridState> {
       this.state.nodes,
       this.props.rows,
       this.props.columns,
-      0,
-      this.state.nodes.length - 1
+      this.state.nodes.indexOf(-1),
+      this.state.nodes.indexOf(-2)
     );
     let path = pathfinder.calcPath(this.state.algorithm);
     let pathNodes = pathfinder.getPathNodes();
@@ -220,8 +223,8 @@ class Grid extends React.Component<GridProps, GridState> {
       this.state.nodes,
       this.props.rows,
       this.props.columns,
-      0,
-      this.state.nodes.length - 1
+      this.state.nodes.indexOf(-1),
+      this.state.nodes.indexOf(-2)
     );
     pathfinder.calcPath(this.state.algorithm);
     this.DisplayPathSteps(pathfinder);
@@ -259,7 +262,22 @@ class Grid extends React.Component<GridProps, GridState> {
       this.state.dragStartInitialWeight === this.state.nodes[index]
     ) {
       let nodes = [...this.state.nodes];
-      nodes[index] = this.state.isCreatingWalls ? 0 : 1;
+      let tempVal = nodes[index] - 1;
+      // make sure we dont go below start/end markers
+      if (tempVal < -2) {
+        //set end node to last node
+        tempVal = 1;
+        nodes[nodes.length - 1] = -2;
+      } else if (tempVal === -2) {
+        // is making an end node, need a new start node, set to first node, clear current end node.
+        nodes[nodes.indexOf(-2)] = 1;
+        nodes[0] = -1;
+      } else if (tempVal === -1) {
+        // new start node, clear previous start node.
+        nodes[nodes.indexOf(-1)] = 1;
+      }
+      nodes[index] = tempVal;
+
       this.setState(state => {
         return {
           isDragging: false,
