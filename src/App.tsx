@@ -19,7 +19,11 @@ const App: React.FC = () => {
               type="number"
               min={3}
               value={rows}
-              onChange={e => setRows(parseInt(e.target.value))}
+              onChange={e =>
+                parseInt(e.target.value) > 0
+                  ? setRows(parseInt(e.target.value))
+                  : setRows(1)
+              }
             />
           </div>
           <div className="input__container">
@@ -30,7 +34,11 @@ const App: React.FC = () => {
               type="number"
               min={3}
               value={columns}
-              onChange={e => setColumns(parseInt(e.target.value))}
+              onChange={e =>
+                parseInt(e.target.value) > 0
+                  ? setColumns(parseInt(e.target.value))
+                  : setColumns(1)
+              }
             />
           </div>
         </div>

@@ -2,7 +2,7 @@ import { PATH_ALGORITHM } from "../Constants/enums";
 import { DijkstraAlgorithm } from "./DijkstraAlgorithm";
 import { AStarAlgorithm } from "./AStarAlgorithm";
 import { PathAlgorithm } from "./PathAlgorithm";
-
+import { DualAStarAlgorithm } from "./DualAStarAlgorithm";
 export class Pathfinder {
   nodes: number[];
   start: number;
@@ -53,6 +53,10 @@ export class Pathfinder {
         break;
       case PATH_ALGORITHM.ASTAR:
         alg = new AStarAlgorithm(data);
+        this.path = alg.calcPath();
+        break;
+      case PATH_ALGORITHM.ASTAR_DUAL:
+        alg = new DualAStarAlgorithm(data);
         this.path = alg.calcPath();
         break;
       default:

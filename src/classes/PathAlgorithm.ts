@@ -90,6 +90,8 @@ export class PathAlgorithm {
     let path = [];
     let pathNode = pathNodes[this.end];
     while (pathNode.prevNode !== undefined) {
+      // console.log("-");
+      //console.log(pathNode.i, pathNode.prevNode);
       path.push(pathNode.i);
       pathNode = pathNodes[pathNode.prevNode];
     }

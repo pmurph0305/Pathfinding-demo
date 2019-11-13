@@ -205,29 +205,33 @@ class Grid extends React.Component<GridProps, GridState> {
    */
   onCalculatePath = () => {
     this.resetPathState();
-    let pathfinder = new Pathfinder(
-      this.state.nodes,
-      this.props.rows,
-      this.props.columns,
-      this.state.nodes.indexOf(-1),
-      this.state.nodes.indexOf(-2)
-    );
-    let path = pathfinder.calcPath(this.state.algorithm);
-    let pathNodes = pathfinder.getPathNodes();
-    this.setState({ path: path, pathNodes: pathNodes });
+    if (this.state.nodes.includes(-1) && this.state.nodes.includes(-2)) {
+      let pathfinder = new Pathfinder(
+        this.state.nodes,
+        this.props.rows,
+        this.props.columns,
+        this.state.nodes.indexOf(-1),
+        this.state.nodes.indexOf(-2)
+      );
+      let path = pathfinder.calcPath(this.state.algorithm);
+      let pathNodes = pathfinder.getPathNodes();
+      this.setState({ path: path, pathNodes: pathNodes });
+    }
   };
 
   onCalculatePathSteps = () => {
     this.resetPathState();
-    let pathfinder = new Pathfinder(
-      this.state.nodes,
-      this.props.rows,
-      this.props.columns,
-      this.state.nodes.indexOf(-1),
-      this.state.nodes.indexOf(-2)
-    );
-    pathfinder.calcPath(this.state.algorithm);
-    this.DisplayPathSteps(pathfinder);
+    if (this.state.nodes.includes(-1) && this.state.nodes.includes(-2)) {
+      let pathfinder = new Pathfinder(
+        this.state.nodes,
+        this.props.rows,
+        this.props.columns,
+        this.state.nodes.indexOf(-1),
+        this.state.nodes.indexOf(-2)
+      );
+      pathfinder.calcPath(this.state.algorithm);
+      this.DisplayPathSteps(pathfinder);
+    }
   };
 
   async DisplayPathSteps(pathfinder: Pathfinder) {
@@ -332,10 +336,15 @@ class Grid extends React.Component<GridProps, GridState> {
    */
   continueDragAt = (index: number) => {
     if (this.state.isDragging) {
-      if (index !== this.state.dragStartIndex) {
+      if (
+        index !== this.state.dragStartIndex &&
+        this.state.nodes[index] !== -1 &&
+        this.state.nodes[index] !== -2
+      ) {
         // User is dragging, so switch between walls & open tiles.
         let nodes = [...this.state.nodes];
         nodes[index] = this.state.isCreatingWalls ? 0 : 1;
+
         nodes[this.state.dragStartIndex] = nodes[index];
         this.setState(state => {
           return { nodes: nodes };
@@ -447,6 +456,7 @@ class Grid extends React.Component<GridProps, GridState> {
                 <option value={PATH_ALGORITHM.DIJKSTRA}>Dijkstra</option>
                 <option value={PATH_ALGORITHM.ASTAR}>A*</option>
                 <option value={PATH_ALGORITHM.ASTAR_GREEDY}>A* Greedy</option>
+                <option value={PATH_ALGORITHM.ASTAR_DUAL}>Dual A*</option>
               </select>
             </div>
             <div className="input__container">

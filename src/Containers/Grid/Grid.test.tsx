@@ -108,9 +108,9 @@ describe("Mounted tests", () => {
     gridItems.at(6).simulate("mouseup");
     expect(wrapper.state().nodes[6]).toEqual(0);
     expect(wrapper.state().isDragging).toEqual(false);
-    gridItems.at(4).simulate("mousedown");
-    gridItems.at(4).simulate("mouseup");
-    expect(wrapper.state().nodes[4]).toEqual(1);
+    // gridItems.at(4).simulate("mousedown");
+    // gridItems.at(4).simulate("mouseup");
+    // expect(wrapper.state().nodes[4]).toEqual(1);
   });
 
   // Note can't test elementFromPoint which is used for TouchEvents in jsdom.

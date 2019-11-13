@@ -11,5 +11,6 @@ export enum GRID_ITEM_STATUS {
 export enum PATH_ALGORITHM {
   DIJKSTRA = 1,
   ASTAR,
-  ASTAR_GREEDY
+  ASTAR_GREEDY,
+  ASTAR_DUAL
 }
